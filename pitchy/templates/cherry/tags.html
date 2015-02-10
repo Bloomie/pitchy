@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+
+    <div class="row">
+        {% if tags %}
+        <ul class="list-group">
+            {% for tag in tags %}
+                <li class="list-group-item"><a href="{% url 'tag' tag.slug %}">{{ tag.name }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="row">
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'add_tag' %}">Add Tag</a></li>
+        {% endif %}
+    </div>
+{% endblock %}

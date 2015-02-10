@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+
+    <h1>{{ tag.name }}</h1>
+
+    <ul class="list-group">
+    {% if artists %}
+        {% for artist in artists %}
+        <li class="list-group-item"><a href="{% url 'artist' artist.slug %}">{{ artist.name }}</a></li>
+        {% endfor %}
+    {% endif %}
+    </ul>
+
+
+{% endblock %}
+
