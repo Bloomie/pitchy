@@ -116,7 +116,7 @@ def add_tag(request):
         # Have we been provided with a valid form?
         if form.is_valid():
             # Save the new category to the database.
-            form.save(commit=True)
+            form.save()
 
             # Now call the index() view.
             # The user will be shown the homepage.
@@ -141,8 +141,9 @@ def add_artist(request):
 
         # Have we been provided with a valid form?
         if form.is_valid():
+
             # Save the new category to the database.
-            form.save(commit=True)
+            form.save()
 
             # Now call the index() view.
             # The user will be shown the homepage.
@@ -152,7 +153,7 @@ def add_artist(request):
             print(form.errors)
     else:
         # If the request was not a POST, display the form to enter details.
-        form = TagForm()
+        form = ArtistForm()
 
     # Bad form (or form details), no form supplied...
     # Render the form with error messages (if any).
@@ -169,15 +170,16 @@ def tag(request, tag_name_slug):
     return render(request, 'cherry/tag.html', context_dict)
 
 
+@login_required()
 def add_artist_to_tag(request, tag_name_slug):
     pass
 
 
-
 def artist(request, artist_name_slug):
-    try:
-        artist = Artist.objects.get(slug=artist_name_slug)
-    except:
-        artist = None
+    artist = Artist.objects.get(slug=artist_name_slug)
     context_dict = {'name': artist.name}
+    tags = Tag.objects.filter(artists=artist)
+    context_dict['artist'] = tag
+    context_dict['slug'] = artist_name_slug
+    context_dict['tags'] = tags
     return render(request, 'cherry/artist.html', context_dict)

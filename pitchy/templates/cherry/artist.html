@@ -2,6 +2,15 @@
 
 {% block body_block %}
 
-<h1>{{ name }}</h1>
+    <h1>{{ artist.name }}</h1>
+
+    <ul class="list-group">
+    {% if tags %}
+        {% for tag in tags %}
+        <li class="list-group-item"><a href="{% url 'tag' tag.slug %}">{{ tag.name }}</a></li>
+        {% endfor %}
+    {% endif %}
+    </ul>
+
 
 {% endblock %}
