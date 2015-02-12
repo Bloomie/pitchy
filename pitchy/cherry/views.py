@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from cherry.models import Tag, Artist
 from cherry.forms import UserForm, UserProfileForm
-from cherry.forms import TagForm, ArtistForm
+from cherry.forms import TagForm, ArtistForm, ArtistToTagForm, TagArtist, TagToArtistForm
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 
@@ -172,14 +172,74 @@ def tag(request, tag_name_slug):
 
 @login_required()
 def add_artist_to_tag(request, tag_name_slug):
-    pass
+    # A HTTP POST?
+    if request.method == 'POST':
+        form = ArtistToTagForm(request.POST)
+
+        # Have we been provided with a valid form?
+        if form.is_valid():
+
+            try:
+                artist = Artist.objects.get(name=form.cleaned_data['name'])
+            except:
+                artist = Artist.objects.create(name=form.cleaned_data['name'])
+            tag_art = TagArtist(artist=artist, tag=Tag.objects.get(slug=tag_name_slug))
+            tag_art.save()
+            # Save the new category to the database.
+
+            # Now call the index() view.
+            # The user will be shown the homepage.
+            return tags(request)
+        else:
+            # The supplied form contained errors - just print them to the terminal.
+            print(form.errors)
+    else:
+        # If the request was not a POST, display the form to enter details.
+        form = ArtistToTagForm()
+
+    # Bad form (or form details), no form supplied...
+    # Render the form with error messages (if any).
+    return render(request, 'cherry/add_artist_to_tag.html', {'form': form, 'tag_name_slug': tag_name_slug})
+
+
+@login_required()
+def add_tag_to_artist(request, artist_name_slug):
+    # A HTTP POST?
+    if request.method == 'POST':
+        form = TagToArtistForm(request.POST)
+
+        # Have we been provided with a valid form?
+        if form.is_valid():
+
+            try:
+                tag = Tag.objects.get(name=form.cleaned_data['name'])
+            except:
+                tag = Tag.objects.create(name=form.cleaned_data['name'])
+            tag_art = TagArtist(artist=Artist.objects.get(slug=artist_name_slug), tag=tag)
+            tag_art.save()
+            # Save the new category to the database.
+
+            # Now call the index() view.
+            # The user will be shown the homepage.
+            return artists(request)
+        else:
+            # The supplied form contained errors - just print them to the terminal.
+            print(form.errors)
+    else:
+        # If the request was not a POST, display the form to enter details.
+        form = TagToArtistForm()
+
+    # Bad form (or form details), no form supplied...
+    # Render the form with error messages (if any).
+    return render(request, 'cherry/add_tag_to_artist.html', {'form': form, 'artist_name_slug': artist_name_slug})
+
 
 
 def artist(request, artist_name_slug):
     artist = Artist.objects.get(slug=artist_name_slug)
     context_dict = {'name': artist.name}
     tags = Tag.objects.filter(artists=artist)
-    context_dict['artist'] = tag
+    context_dict['artist'] = artist
     context_dict['slug'] = artist_name_slug
     context_dict['tags'] = tags
     return render(request, 'cherry/artist.html', context_dict)

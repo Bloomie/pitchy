@@ -12,4 +12,6 @@ urlpatterns = patterns('',
                        url(r'^add_artist/$', views.add_artist, name='add_artist'),
                        url(r'^tags/(?P<tag_name_slug>[\w\d-]+)/add_artist/$', views.add_artist_to_tag,
                            name='add_artist_to_tag'),
+                       url(r'artists/(?P<artist_name_slug>[\w\d-]+)/add_tag/$', views.add_tag_to_artist,
+                           name='add_tag_to_artist'),
                        )
